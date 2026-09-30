@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Restaurantes Visitados</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #999; padding: 8px 12px; text-align: left; }
+    th { background-color: #333; color: white; }
+    .verde { background-color: #d4f7dc; }
+    .amarillo { background-color: #fff6cc; }
+    .rojo { background-color: #f9d6d6; }
+    form { margin-bottom: 16px; }
+    select { padding: 6px 10px; }
+  </style>
+</head>
+<body>
+  <h1>Restaurantes Visitados</h1>
+
+  <form method="GET">
+    <label for="tipo"><strong>Tipo de comida:</strong></label>
+    <select name="tipo" id="tipo" onchange="this.form.submit()">
+      <option value="">Todos</option>
+      {% for t in tipos_disponibles %}
+        <option value="{{ t }}" {% if t == tipo_seleccionado %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  {% if restaurantes %}
+  <table>
+    <tr>
+      <th>Nombre</th>
+      <th>Tipo de comida</th>
+      <th>Calificación</th>
+      <th>Estado</th>
+      <th>Fecha de visita</th>
+    </tr>
+    {% for restaurante in restaurantes %}
+      <tr class="{% if restaurante.calificacion >= 4 %}verde{% elif restaurante.calificacion == 3 %}amarillo{% else %}rojo{% endif %}">
+        <td>{{ restaurante.nombre }}</td>
+        <td>{{ restaurante.tipo_comida }}</td>
+        <td>
+          {% for i in "12345" %}{% if forloop.counter <= restaurante.calificacion %}★{% else %}☆{% endif %}{% endfor %}
+        </td>
+        <td>{% if restaurante.abierto %}Abierto{% else %}Cerrado{% endif %}</td>
+        <td>{% if restaurante.fecha_visita %}{{ restaurante.fecha_visita|date:"d/m/Y" }} (hace {{ restaurante.fecha_visita|timesince }})
+          {% else %}{% endif %}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <p>No hay restaurantes registrados para este tipo de comida.</p>
+  {% endif %}
+</body>
+</html>
