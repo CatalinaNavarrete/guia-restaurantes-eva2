@@ -15,8 +15,15 @@
     select { padding: 6px 10px; }
   </style>
 </head>
-<body>
+
+  <body>
+
   <h1>Restaurantes Visitados</h1>
+
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Cerrar sesión</button>
+  </form>
 
   <form method="GET">
     <label for="tipo"><strong>Tipo de comida:</strong></label>
