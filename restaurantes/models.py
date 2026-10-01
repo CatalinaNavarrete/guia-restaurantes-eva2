@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 class Restaurante(models.Model):
@@ -14,6 +15,13 @@ class Restaurante(models.Model):
     calificacion = models.IntegerField(choices=CALIFICACION_CHOICES, default=3)
     abierto = models.BooleanField(default=True)
     fecha_visita = models.DateField(null=True, blank=True)
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='restaurantes',
+    )
 
     def __str__(self):
         return self.nombre
