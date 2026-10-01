@@ -23,3 +23,4 @@ El archivo `.env` está en `.gitignore`, así que la contraseña de la base de d
 - Catalina Navarrete
 - Ignacio Cancino
 - Luis Ramirez
+- Facundo Carotta
