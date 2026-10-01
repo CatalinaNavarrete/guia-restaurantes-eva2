@@ -46,19 +46,37 @@
       <th>Calificación</th>
       <th>Estado</th>
       <th>Fecha de visita</th>
+      <th>Acciones</th>
     </tr>
     {% for restaurante in restaurantes %}
-      <tr class="{% if restaurante.calificacion >= 4 %}verde{% elif restaurante.calificacion == 3 %}amarillo{% else %}rojo{% endif %}">
+    <tr class="{% if restaurante.calificacion >= 4 %}verde{% elif restaurante.calificacion == 3 %}amarillo{% else %}rojo{% endif %}">
         <td>{{ restaurante.nombre }}</td>
         <td>{{ restaurante.tipo_comida }}</td>
         <td>
-          {% for i in "12345" %}{% if forloop.counter <= restaurante.calificacion %}★{% else %}☆{% endif %}{% endfor %}
+            {% for i in "12345" %}
+                {% if forloop.counter <= restaurante.calificacion %}★{% else %}☆{% endif %}
+            {% endfor %}
         </td>
-        <td>{% if restaurante.abierto %}Abierto{% else %}Cerrado{% endif %}</td>
-        <td>{% if restaurante.fecha_visita %}{{ restaurante.fecha_visita|date:"d/m/Y" }} (hace {{ restaurante.fecha_visita|timesince }})
-          {% else %}{% endif %}</td>
-      </tr>
-    {% endfor %}
+        <td>
+            {% if restaurante.abierto %}Abierto{% else %}Cerrado{% endif %}
+        </td>
+        <td>
+            {% if restaurante.fecha_visita %}
+                {{ restaurante.fecha_visita|date:"d/m/Y" }}
+                (hace {{ restaurante.fecha_visita|timesince }})
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'editar_restaurante' restaurante.pk %}">
+                Editar
+            </a>
+            <a href="{% url 'eliminar_restaurante' restaurante.pk %}">
+               Eliminar
+                
+</a>
+        </td>
+    </tr>
+{% endfor %}
   </table>
   {% else %}
     <p>No hay restaurantes registrados para este tipo de comida.</p>
