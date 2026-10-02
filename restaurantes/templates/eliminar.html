@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Restaurante</title>
+    <title>Eliminar restaurante</title>
 
     <style>
         * {
@@ -15,31 +15,14 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 32px 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        input:not([type="checkbox"]),
-        select,
-        textarea {
-            width: 100%;
-            min-height: 44px;
-            padding: 10px;
-            font-size: 16px;
-        }
-
-        input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
+            overflow-wrap: anywhere;
         }
 
         button,
         a {
             display: inline-block;
             padding: 12px 16px;
+            margin-bottom: 8px;
             font-size: 16px;
         }
 
@@ -52,23 +35,23 @@
                 font-size: 24px;
             }
 
-            button {
+            button,
+            a {
+                display: block;
                 width: 100%;
+                text-align: center;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Registrar Restaurante</h1>
+    <h1>Eliminar restaurante</h1>
+    <p>¿Seguro que deseas eliminar "{{ restaurante.nombre }}"?</p>
 
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Guardar Restaurante</button>
+        <button type="submit">Sí, eliminar</button>
+        <a href="{% url 'listar_restaurantes' %}">Cancelar</a>
     </form>
-
-    <a href="{% url 'listar_restaurantes' %}">
-        Volver al listado
-    </a>
 </body>
 </html>

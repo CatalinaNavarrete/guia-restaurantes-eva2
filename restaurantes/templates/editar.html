@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Restaurante</title>
+    <title>Editar restaurante</title>
 
     <style>
         * {
@@ -15,6 +15,10 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 32px 20px;
+        }
+
+        h1 {
+            overflow-wrap: anywhere;
         }
 
         label {
@@ -59,16 +63,14 @@
     </style>
 </head>
 <body>
-    <h1>Registrar Restaurante</h1>
+    <h1>Editar restaurante: {{ restaurante.nombre }}</h1>
 
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Guardar Restaurante</button>
-    </form>
 
-    <a href="{% url 'listar_restaurantes' %}">
-        Volver al listado
-    </a>
+        <button type="submit">Guardar cambios</button>
+        <a href="{% url 'listar_restaurantes' %}">Cancelar</a>
+    </form>
 </body>
 </html>

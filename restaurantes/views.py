@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Restaurante
 from .forms import RestauranteForm
-from django.contrib.auth.decorators import login_required
 
 
 @login_required
@@ -31,7 +31,6 @@ def listar_restaurantes(request):
 
 @login_required
 def crear_restaurante(request):
-
     if request.method == 'POST':
         form = RestauranteForm(request.POST)
 
@@ -39,16 +38,61 @@ def crear_restaurante(request):
             restaurante = form.save(commit=False)
             restaurante.usuario = request.user
             restaurante.save()
-
             return redirect('listar_restaurantes')
-
     else:
         form = RestauranteForm()
 
     return render(
         request,
         'crear.html',
+        {'form': form}
+    )
+
+
+@login_required
+def editar_restaurante(request, pk):
+    restaurante = get_object_or_404(
+        Restaurante,
+        pk=pk,
+        usuario=request.user,
+    )
+
+    if request.method == 'POST':
+        form = RestauranteForm(
+            request.POST,
+            instance=restaurante,
+        )
+
+        if form.is_valid():
+            form.save()
+            return redirect('listar_restaurantes')
+    else:
+        form = RestauranteForm(instance=restaurante)
+
+    return render(
+        request,
+        'editar.html',
         {
-            'form': form
-        }
+            'form': form,
+            'restaurante': restaurante,
+        },
+    )
+
+
+@login_required
+def eliminar_restaurante(request, pk):
+    restaurante = get_object_or_404(
+        Restaurante,
+        pk=pk,
+        usuario=request.user,
+    )
+
+    if request.method == 'POST':
+        restaurante.delete()
+        return redirect('listar_restaurantes')
+
+    return render(
+        request,
+        'eliminar.html',
+        {'restaurante': restaurante},
     )
