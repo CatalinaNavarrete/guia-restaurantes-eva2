@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.paginator import Paginator
 from .models import Restaurante
 from .forms import RestauranteForm
 
@@ -7,6 +9,7 @@ from .forms import RestauranteForm
 @login_required
 def listar_restaurantes(request):
     restaurantes = Restaurante.objects.filter(usuario=request.user)
+    
 
     tipos_disponibles = restaurantes.values_list(
         'tipo_comida',
@@ -17,6 +20,10 @@ def listar_restaurantes(request):
 
     if tipo:
         restaurantes = restaurantes.filter(tipo_comida=tipo)
+
+    paginator = Paginator(restaurantes, 5)
+    pagina = request.GET.get('page')
+    restaurantes = paginator.get_page(pagina)
 
     return render(
         request,
@@ -38,7 +45,16 @@ def crear_restaurante(request):
             restaurante = form.save(commit=False)
             restaurante.usuario = request.user
             restaurante.save()
+
+            messages.success(request, 'Restaurante creado correctamente.')
             return redirect('listar_restaurantes')
+
+        else:
+            messages.error(
+                request,
+                'No se pudo crear el restaurante. Revisa los datos ingresados.'
+            )
+
     else:
         form = RestauranteForm()
 
@@ -65,7 +81,15 @@ def editar_restaurante(request, pk):
 
         if form.is_valid():
             form.save()
+            messages.success(request, 'Restaurante actualizado correctamente.')
             return redirect('listar_restaurantes')
+
+        else:
+            messages.error(
+                request,
+                'No se pudo actualizar el restaurante. Revisa los datos ingresados.'
+            )
+
     else:
         form = RestauranteForm(instance=restaurante)
 
@@ -89,6 +113,7 @@ def eliminar_restaurante(request, pk):
 
     if request.method == 'POST':
         restaurante.delete()
+        messages.success(request, 'Restaurante eliminado correctamente.')
         return redirect('listar_restaurantes')
 
     return render(

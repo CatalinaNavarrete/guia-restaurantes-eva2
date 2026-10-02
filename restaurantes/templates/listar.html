@@ -61,12 +61,25 @@ select {
         text-align: center;
     }
 }
+
+.mensaje {
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: #d4f7dc;
+    border: 1px solid #8ac99a;
+}
   </style>
 </head>
 
   <body>
 
   <h1>Restaurantes Visitados</h1>
+
+  {% if messages %}
+    {% for message in messages %}
+        <p class="mensaje">{{ message }}</p>
+    {% endfor %}
+{% endif %}
 
   <a href="{% url 'crear_restaurante' %}">
   Agregar Restaurante
@@ -126,9 +139,30 @@ select {
         </td>
     </tr>
 {% endfor %}
-  </table>
-  {% else %}
+</table>
+</div>
+
+<div class="paginacion">
+    {% if restaurantes.has_previous %}
+        <a href="?page={{ restaurantes.previous_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">
+            Anterior
+        </a>
+    {% endif %}
+
+    <span>
+        Página {{ restaurantes.number }} de {{ restaurantes.paginator.num_pages }}
+    </span>
+
+    {% if restaurantes.has_next %}
+        <a href="?page={{ restaurantes.next_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">
+            Siguiente
+        </a>
+    {% endif %}
+</div>
+
+{% else %}
     <p>No hay restaurantes registrados para este tipo de comida.</p>
-  {% endif %}
+{% endif %}
+    
 </body>
 </html>
