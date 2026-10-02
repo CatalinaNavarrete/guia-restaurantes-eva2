@@ -2,10 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db import DatabaseError
 from django.db.models import Sum
 
 from .models import Restaurante, Reserva
 from .forms import RestauranteForm, RegistroForm, ReservaForm
+
 
 def registro(request):
     if request.user.is_authenticated:
@@ -35,10 +37,11 @@ def registro(request):
         }
     )
 
+
 @login_required
 def listar_restaurantes(request):
+    # Todos los usuarios autenticados pueden ver los restaurantes
     restaurantes = Restaurante.objects.all()
-    
 
     tipos_disponibles = restaurantes.values_list(
         'tipo_comida',
@@ -48,11 +51,20 @@ def listar_restaurantes(request):
     tipo = request.GET.get('tipo')
 
     if tipo:
-        restaurantes = restaurantes.filter(tipo_comida=tipo)
+        restaurantes = restaurantes.filter(
+            tipo_comida=tipo
+        )
 
-    paginator = Paginator(restaurantes, 5)
+    paginator = Paginator(
+        restaurantes,
+        5
+    )
+
     pagina = request.GET.get('page')
-    restaurantes = paginator.get_page(pagina)
+
+    restaurantes = paginator.get_page(
+        pagina
+    )
 
     return render(
         request,
@@ -71,12 +83,30 @@ def crear_restaurante(request):
         form = RestauranteForm(request.POST)
 
         if form.is_valid():
-            restaurante = form.save(commit=False)
-            restaurante.usuario = request.user
-            restaurante.save()
 
-            messages.success(request, 'Restaurante creado correctamente.')
-            return redirect('listar_restaurantes')
+            try:
+                restaurante = form.save(
+                    commit=False
+                )
+
+                restaurante.usuario = request.user
+
+                restaurante.save()
+
+                messages.success(
+                    request,
+                    'Restaurante creado correctamente.'
+                )
+
+                return redirect(
+                    'listar_restaurantes'
+                )
+
+            except DatabaseError:
+                messages.error(
+                    request,
+                    'Ocurrió un error al guardar el restaurante.'
+                )
 
         else:
             messages.error(
@@ -90,12 +120,15 @@ def crear_restaurante(request):
     return render(
         request,
         'crear.html',
-        {'form': form}
+        {
+            'form': form
+        }
     )
 
 
 @login_required
 def editar_restaurante(request, pk):
+    # Solo el propietario puede editar el restaurante
     restaurante = get_object_or_404(
         Restaurante,
         pk=pk,
@@ -109,9 +142,24 @@ def editar_restaurante(request, pk):
         )
 
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Restaurante actualizado correctamente.')
-            return redirect('listar_restaurantes')
+
+            try:
+                form.save()
+
+                messages.success(
+                    request,
+                    'Restaurante actualizado correctamente.'
+                )
+
+                return redirect(
+                    'listar_restaurantes'
+                )
+
+            except DatabaseError:
+                messages.error(
+                    request,
+                    'Ocurrió un error al actualizar el restaurante.'
+                )
 
         else:
             messages.error(
@@ -120,7 +168,9 @@ def editar_restaurante(request, pk):
             )
 
     else:
-        form = RestauranteForm(instance=restaurante)
+        form = RestauranteForm(
+            instance=restaurante
+        )
 
     return render(
         request,
@@ -128,12 +178,13 @@ def editar_restaurante(request, pk):
         {
             'form': form,
             'restaurante': restaurante,
-        },
+        }
     )
 
 
 @login_required
 def eliminar_restaurante(request, pk):
+    # Solo el propietario puede eliminar el restaurante
     restaurante = get_object_or_404(
         Restaurante,
         pk=pk,
@@ -141,30 +192,56 @@ def eliminar_restaurante(request, pk):
     )
 
     if request.method == 'POST':
-        restaurante.delete()
-        messages.success(request, 'Restaurante eliminado correctamente.')
-        return redirect('listar_restaurantes')
+
+        try:
+            restaurante.delete()
+
+            messages.success(
+                request,
+                'Restaurante eliminado correctamente.'
+            )
+
+        except DatabaseError:
+            messages.error(
+                request,
+                'Ocurrió un error al eliminar el restaurante.'
+            )
+
+        return redirect(
+            'listar_restaurantes'
+        )
 
     return render(
         request,
         'eliminar.html',
-        {'restaurante': restaurante},
+        {
+            'restaurante': restaurante
+        }
     )
+
 
 @login_required
 def reservar_restaurante(request, pk):
-    restaurante = get_object_or_404(Restaurante, pk=pk)
+    # Busca el restaurante donde se realizará la reserva
+    restaurante = get_object_or_404(
+        Restaurante,
+        pk=pk
+    )
 
     if request.method == 'POST':
-        form = ReservaForm(request.POST)
+        form = ReservaForm(
+            request.POST
+        )
 
         if form.is_valid():
             fecha = form.cleaned_data['fecha']
             hora = form.cleaned_data['hora']
-            cantidad = form.cleaned_data['cantidad_personas']
+            cantidad = form.cleaned_data[
+                'cantidad_personas'
+            ]
 
-            # Evita que el mismo usuario reserve dos veces
-            # el mismo restaurante, fecha y hora
+            # Comprueba si el usuario ya tiene una reserva
+            # para el mismo restaurante, fecha y hora
             reserva_existente = Reserva.objects.filter(
                 usuario=request.user,
                 restaurante=restaurante,
@@ -181,7 +258,8 @@ def reservar_restaurante(request, pk):
                 )
 
             else:
-                # Suma las personas ya reservadas
+                # Suma la cantidad de personas ya reservadas
+                # para ese restaurante, fecha y hora
                 reservados = Reserva.objects.filter(
                     restaurante=restaurante,
                     fecha=fecha,
@@ -189,11 +267,18 @@ def reservar_restaurante(request, pk):
                 ).exclude(
                     estado='cancelada'
                 ).aggregate(
-                    total=Sum('cantidad_personas')
+                    total=Sum(
+                        'cantidad_personas'
+                    )
                 )['total'] or 0
 
-                disponibles = restaurante.capacidad - reservados
+                # Calcula los cupos disponibles
+                disponibles = (
+                    restaurante.capacidad
+                    - reservados
+                )
 
+                # Impide superar la capacidad máxima
                 if cantidad > disponibles:
                     form.add_error(
                         'cantidad_personas',
@@ -201,17 +286,30 @@ def reservar_restaurante(request, pk):
                     )
 
                 else:
-                    reserva = form.save(commit=False)
-                    reserva.usuario = request.user
-                    reserva.restaurante = restaurante
-                    reserva.save()
+                    try:
+                        reserva = form.save(
+                            commit=False
+                        )
 
-                    messages.success(
-                        request,
-                        'Reserva realizada correctamente.'
-                    )
+                        reserva.usuario = request.user
+                        reserva.restaurante = restaurante
 
-                    return redirect('mis_reservas')
+                        reserva.save()
+
+                        messages.success(
+                            request,
+                            'Reserva realizada correctamente.'
+                        )
+
+                        return redirect(
+                            'mis_reservas'
+                        )
+
+                    except DatabaseError:
+                        messages.error(
+                            request,
+                            'Ocurrió un error al guardar la reserva.'
+                        )
 
     else:
         form = ReservaForm()
@@ -228,7 +326,7 @@ def reservar_restaurante(request, pk):
 
 @login_required
 def mis_reservas(request):
-    # Cada cliente ve solamente sus propias reservas
+    # Cada usuario solamente puede ver sus propias reservas
     reservas = Reserva.objects.filter(
         usuario=request.user
     )
@@ -236,5 +334,35 @@ def mis_reservas(request):
     return render(
         request,
         'mis_reservas.html',
-        {'reservas': reservas}
+        {
+            'reservas': reservas
+        }
+    )
+
+
+@login_required
+def detalle_restaurante(request, pk):
+    # Busca el restaurante seleccionado
+    restaurante = get_object_or_404(
+        Restaurante,
+        pk=pk
+    )
+
+    # Obtiene toda la información relacionada
+    # con el restaurante
+    horarios = restaurante.horarios.all()
+    promociones = restaurante.promociones.all()
+    resenas = restaurante.resenas.all()
+    fotos = restaurante.fotos.all()
+
+    return render(
+        request,
+        'detalle.html',
+        {
+            'restaurante': restaurante,
+            'horarios': horarios,
+            'promociones': promociones,
+            'resenas': resenas,
+            'fotos': fotos,
+        }
     )
