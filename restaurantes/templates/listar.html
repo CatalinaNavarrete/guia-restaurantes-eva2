@@ -2,9 +2,33 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Restaurantes Visitados</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 40px;
+}
+
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    th, td {
+        white-space: nowrap;
+    }
+}
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #999; padding: 8px 12px; text-align: left; }
     th { background-color: #333; color: white; }
@@ -13,6 +37,30 @@
     .rojo { background-color: #f9d6d6; }
     form { margin-bottom: 16px; }
     select { padding: 6px 10px; }
+
+    button,
+a {
+    display: inline-block;
+    padding: 10px 14px;
+    margin: 4px 0;
+}
+
+button,
+select {
+    font-size: 16px;
+    min-height: 44px;
+}
+
+select {
+    max-width: 100%;
+}
+
+@media (max-width: 600px) {
+    td a {
+        display: block;
+        text-align: center;
+    }
+}
   </style>
 </head>
 
@@ -39,6 +87,7 @@
   </form>
 
   {% if restaurantes %}
+  <div class="tabla-contenedor">
   <table>
     <tr>
       <th>Nombre</th>

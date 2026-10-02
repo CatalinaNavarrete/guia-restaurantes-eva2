@@ -2,7 +2,65 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar restaurante</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        h1 {
+            overflow-wrap: anywhere;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input:not([type="checkbox"]),
+        select,
+        textarea {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+        }
+
+        button,
+        a {
+            display: inline-block;
+            padding: 12px 16px;
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Editar restaurante: {{ restaurante.nombre }}</h1>
