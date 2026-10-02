@@ -43,21 +43,25 @@ class RegistroForm(UserCreationForm):
 
 
 class ReservaForm(forms.ModelForm):
-    # Formulario que utilizará el cliente para realizar una reserva
     class Meta:
         model = Reserva
-
-        # El usuario y el restaurante se asignan automáticamente
-        # desde la vista, por eso no aparecen en el formulario
         fields = [
             'fecha',
             'hora',
             'cantidad_personas',
             'nota',
         ]
-
-        # Muestra selectores adecuados para fecha y hora
         widgets = {
             'fecha': forms.DateInput(attrs={'type': 'date'}),
             'hora': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+    def clean_fecha(self):
+        fecha = self.cleaned_data.get('fecha')
+
+        if fecha and fecha < timezone.localdate():
+            raise forms.ValidationError(
+                'No puedes reservar en una fecha anterior a hoy.'
+            )
+
+        return fecha

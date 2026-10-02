@@ -8,6 +8,12 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
 
     path(
+        'registro/',
+        views.registro,
+        name='registro'
+    ),
+
+    path(
         'restaurantes/',
         views.listar_restaurantes,
         name='listar_restaurantes'
@@ -32,8 +38,14 @@ urlpatterns = [
     ),
 
     path(
-    'registro/',
-    views.registro,
-    name='registro'
+        'restaurantes/<int:pk>/reservar/',
+        views.reservar_restaurante,
+        name='reservar_restaurante'
+    ),
+
+    path(
+        'mis-reservas/',
+        views.mis_reservas,
+        name='mis_reservas'
     ),
 ]
