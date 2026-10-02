@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db import DatabaseError
 from .models import Restaurante
 from .forms import RestauranteForm
 
@@ -9,7 +10,6 @@ from .forms import RestauranteForm
 @login_required
 def listar_restaurantes(request):
     restaurantes = Restaurante.objects.filter(usuario=request.user)
-    
 
     tipos_disponibles = restaurantes.values_list(
         'tipo_comida',
@@ -42,12 +42,22 @@ def crear_restaurante(request):
         form = RestauranteForm(request.POST)
 
         if form.is_valid():
-            restaurante = form.save(commit=False)
-            restaurante.usuario = request.user
-            restaurante.save()
+            try:
+                restaurante = form.save(commit=False)
+                restaurante.usuario = request.user
+                restaurante.save()
 
-            messages.success(request, 'Restaurante creado correctamente.')
-            return redirect('listar_restaurantes')
+                messages.success(
+                    request,
+                    'Restaurante creado correctamente.'
+                )
+                return redirect('listar_restaurantes')
+
+            except DatabaseError:
+                messages.error(
+                    request,
+                    'Ocurrió un error al guardar el restaurante.'
+                )
 
         else:
             messages.error(
@@ -61,7 +71,9 @@ def crear_restaurante(request):
     return render(
         request,
         'crear.html',
-        {'form': form}
+        {
+            'form': form
+        }
     )
 
 
@@ -80,9 +92,20 @@ def editar_restaurante(request, pk):
         )
 
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Restaurante actualizado correctamente.')
-            return redirect('listar_restaurantes')
+            try:
+                form.save()
+
+                messages.success(
+                    request,
+                    'Restaurante actualizado correctamente.'
+                )
+                return redirect('listar_restaurantes')
+
+            except DatabaseError:
+                messages.error(
+                    request,
+                    'Ocurrió un error al actualizar el restaurante.'
+                )
 
         else:
             messages.error(
@@ -99,7 +122,7 @@ def editar_restaurante(request, pk):
         {
             'form': form,
             'restaurante': restaurante,
-        },
+        }
     )
 
 
@@ -112,12 +135,26 @@ def eliminar_restaurante(request, pk):
     )
 
     if request.method == 'POST':
-        restaurante.delete()
-        messages.success(request, 'Restaurante eliminado correctamente.')
+        try:
+            restaurante.delete()
+
+            messages.success(
+                request,
+                'Restaurante eliminado correctamente.'
+            )
+
+        except DatabaseError:
+            messages.error(
+                request,
+                'Ocurrió un error al eliminar el restaurante.'
+            )
+
         return redirect('listar_restaurantes')
 
     return render(
         request,
         'eliminar.html',
-        {'restaurante': restaurante},
+        {
+            'restaurante': restaurante
+        }
     )
