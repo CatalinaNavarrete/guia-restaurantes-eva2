@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis reservas</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background-color: #f4f6f8; color: #333; }
+        .contenedor { width: 100%; max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+        .encabezado { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+        .titulo h1 { margin: 0 0 6px 0; color: #222; font-size: 32px; }
+        .titulo p { margin: 0; color: #666; }
+        .btn { display: inline-block; padding: 11px 16px; border-radius: 8px; border: none; text-decoration: none; font-size: 15px; cursor: pointer; text-align: center; }
+        .btn-principal { background-color: #2f3e46; color: white; }
+        .btn-principal:hover { background-color: #1f2a30; }
+        .btn-secundario { background-color: #e4e7ea; color: #333; }
+        .btn-secundario:hover { background-color: #d5d9dd; }
+        .mensaje { background-color: #e8f4ec; border: 1px solid #b8d8c1; color: #2d6639; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; }
+        .tabla-card { background-color: white; border-radius: 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.07); overflow: hidden; }
+        .tabla-contenedor { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background-color: #2f3e46; color: white; text-align: left; padding: 14px; font-size: 14px; }
+        td { padding: 14px; border-bottom: 1px solid #e7e7e7; vertical-align: middle; }
+        tbody tr:hover { background-color: #f7f8f9; }
+        .estado { display: inline-block; padding: 6px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .pendiente { background-color: #fff3cd; color: #856404; }
+        .confirmada { background-color: #e2f2e6; color: #286338; }
+        .cancelada { background-color: #f7e4e6; color: #8c2e38; }
+        .vacio { text-align: center; padding: 50px 20px; color: #666; background-color: white; border-radius: 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.07); }
+        @media (max-width: 700px) { .titulo h1 { font-size: 26px; } th, td { padding: 10px 8px; font-size: 13px; } }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <div class="encabezado">
+            <div class="titulo">
+                <h1>Mis reservas</h1>
+                <p>Aquí puedes ver todas las reservas que has realizado</p>
+            </div>
+            <div>
+                <a href="{% url 'listar_restaurantes' %}" class="btn btn-secundario">Volver a restaurantes</a>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mensaje">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if reservas %}
+            <div class="tabla-card">
+                <div class="tabla-contenedor">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Restaurante</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Personas</th>
+                                <th>Estado</th>
+                                <th>Nota</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reserva in reservas %}
+                                <tr>
+                                    <td><strong>{{ reserva.restaurante.nombre }}</strong></td>
+                                    <td>{{ reserva.fecha|date:"d/m/Y" }}</td>
+                                    <td>{{ reserva.hora|time:"H:i" }}</td>
+                                    <td>{{ reserva.cantidad_personas }}</td>
+                                    <td><span class="estado {{ reserva.estado }}">{{ reserva.get_estado_display }}</span></td>
+                                    <td>{% if reserva.nota %}{{ reserva.nota|truncatechars:40 }}{% else %}<span style="color:#999;">—</span>{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="vacio">
+                <p style="font-size:18px; margin-bottom:10px;">Aún no tienes reservas</p>
+                <p>Ve a la lista de restaurantes y reserva una mesa.</p>
+                <br>
+                <a href="{% url 'listar_restaurantes' %}" class="btn btn-principal">Ver restaurantes</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

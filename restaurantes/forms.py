@@ -1,0 +1,71 @@
+from django import forms
+from django.utils import timezone
+from .models import Restaurante, Reserva
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+
+class RestauranteForm(forms.ModelForm):
+    class Meta:
+        model = Restaurante
+        fields = [
+            'nombre',
+            'descripcion',
+            'tipo_comida',
+            'ciudad',
+            'direccion',
+            'telefono',
+            'calificacion',
+            'abierto',
+            'fecha_visita',
+            'capacidad',
+        ]
+
+    
+    def clean_fecha_visita(self):
+        fecha_visita = self.cleaned_data.get('fecha_visita')
+
+        if fecha_visita and fecha_visita > timezone.localdate():
+            raise forms.ValidationError(
+                'La fecha de visita no puede ser futura.'
+            )
+
+        return fecha_visita
+
+#aprovecha el sistema de usuarios que Django ya trae.
+class RegistroForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'email',
+            'password1',
+            'password2',
+        ]
+
+
+class ReservaForm(forms.ModelForm):
+    class Meta:
+        model = Reserva
+        fields = [
+            'fecha',
+            'hora',
+            'cantidad_personas',
+            'nota',
+        ]
+        widgets = {
+            'fecha': forms.DateInput(attrs={'type': 'date'}),
+            'hora': forms.TimeInput(attrs={'type': 'time'}),
+        }
+
+    def clean_fecha(self):
+        fecha = self.cleaned_data.get('fecha')
+
+        if fecha and fecha < timezone.localdate():
+            raise forms.ValidationError(
+                'No puedes reservar en una fecha anterior a hoy.'
+            )
+
+        return fecha
