@@ -1,85 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 32px 20px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 6px;
-    }
-
-    input:not([type="checkbox"]),
-    select,
-    textarea {
-        width: 100%;
-        min-height: 44px;
-        padding: 10px;
-        font-size: 16px;
-    }
-
-    input[type="checkbox"] {
-        width: 22px;
-        height: 22px;
-    }
-
-    button,
-    a {
-        display: inline-block;
-        padding: 12px 16px;
-        font-size: 16px;
-    }
-
-    @media (max-width: 600px) {
-        body {
-            padding: 16px;
-        }
-
-        h1 {
-            font-size: 24px;
-        }
-
-        button {
-            width: 100%;
-        }
-    }
-</style>
     <title>Nuevo Restaurante</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input:not([type="checkbox"]),
+        select,
+        textarea {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+        }
+
+        button,
+        a {
+            display: inline-block;
+            padding: 12px 16px;
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
     <h1>Registrar Restaurante</h1>
 
-    <form method="POST">
+    <form method="post">
         {% csrf_token %}
-
         {{ form.as_p }}
-
-        <button type="submit">
-            Guardar Restaurante
-        </button>
+        <button type="submit">Guardar Restaurante</button>
     </form>
-
-    <br>
 
     <a href="{% url 'listar_restaurantes' %}">
         Volver al listado
     </a>
-
 </body>
-
 </html>

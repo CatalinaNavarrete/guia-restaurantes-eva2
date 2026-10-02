@@ -18,11 +18,13 @@ urlpatterns = [
         views.crear_restaurante,
         name='crear_restaurante'
     ),
+
     path(
         'restaurantes/<int:pk>/editar/',
         views.editar_restaurante,
         name='editar_restaurante'
     ),
+
     path(
         'restaurantes/<int:pk>/eliminar/',
         views.eliminar_restaurante,
