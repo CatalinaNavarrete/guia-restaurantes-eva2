@@ -338,3 +338,31 @@ def mis_reservas(request):
             'reservas': reservas
         }
     )
+
+
+@login_required
+def detalle_restaurante(request, pk):
+    # Busca el restaurante seleccionado
+    restaurante = get_object_or_404(
+        Restaurante,
+        pk=pk
+    )
+
+    # Obtiene toda la información relacionada
+    # con el restaurante
+    horarios = restaurante.horarios.all()
+    promociones = restaurante.promociones.all()
+    resenas = restaurante.resenas.all()
+    fotos = restaurante.fotos.all()
+
+    return render(
+        request,
+        'detalle.html',
+        {
+            'restaurante': restaurante,
+            'horarios': horarios,
+            'promociones': promociones,
+            'resenas': resenas,
+            'fotos': fotos,
+        }
+    )

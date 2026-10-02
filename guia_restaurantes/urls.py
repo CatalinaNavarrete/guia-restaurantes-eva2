@@ -2,10 +2,23 @@ from django.contrib import admin
 from django.urls import path, include
 from restaurantes import views
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
 
-    path('accounts/', include('django.contrib.auth.urls')),
+urlpatterns = [
+    path(
+        'admin/',
+        admin.site.urls
+    ),
+
+    path(
+        'accounts/',
+        include('django.contrib.auth.urls')
+    ),
+
+    path(
+        'registro/',
+        views.registro,
+        name='registro'
+    ),
 
     path(
         'restaurantes/',
@@ -32,8 +45,20 @@ urlpatterns = [
     ),
 
     path(
-    'registro/',
-    views.registro,
-    name='registro'
+        'restaurantes/<int:pk>/reservar/',
+        views.reservar_restaurante,
+        name='reservar_restaurante'
+    ),
+
+    path(
+        'mis-reservas/',
+        views.mis_reservas,
+        name='mis_reservas'
+    ),
+
+    path(
+        'restaurantes/<int:pk>/',
+        views.detalle_restaurante,
+        name='detalle_restaurante'
     ),
 ]
