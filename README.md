@@ -1,26 +1,42 @@
 # Guía de Restaurantes
 
-Aplicación web hecha con Django para registrar restaurantes visitados, con su tipo de comida, calificación, estado y fecha de visita. Proyecto de la Evaluación 2 (Caso 3).
+Proyecto desarrollado para la Evaluación 2 de Programación Back End.
 
-## Tecnologías
-- Python y Django
-- PostgreSQL en Supabase
-- python-decouple y dj-database-url para leer la configuración desde el archivo .env
+La aplicación fue desarrollada con Django y permite gestionar restaurantes mediante un sistema CRUD, autenticación de usuarios y una base de datos PostgreSQL alojada en Supabase.
 
-## Cómo ejecutarlo
-1. Clonar el repositorio y crear un entorno virtual:
-   `python -m venv venv` y luego `.\venv\Scripts\Activate.ps1`
-2. Instalar las dependencias: `pip install -r requirements.txt`
-3. Crear un archivo `.env` en la raíz con una línea: `DATABASE_URL=` seguida de la cadena de conexión de Supabase (Session pooler).
-4. Aplicar las migraciones: `python manage.py migrate`
-5. Crear un administrador: `python manage.py createsuperuser`
-6. Iniciar el servidor: `python manage.py runserver`
+## Funcionalidades
 
-## Seguridad
-El archivo `.env` está en `.gitignore`, así que la contraseña de la base de datos no se sube a GitHub.
+- Inicio y cierre de sesión.
+- Usuarios autenticados.
+- Crear restaurantes.
+- Listar restaurantes.
+- Editar restaurantes.
+- Eliminar restaurantes.
+- Cada usuario puede gestionar sus propios restaurantes.
+- Filtro por tipo de comida.
+- Calificación de restaurantes.
+- Estado abierto o cerrado.
+- Fecha de visita.
+- Django Admin personalizado.
+- Protección CSRF.
+- Validación de formularios.
 
-## Equipo
-- Catalina Navarrete
-- Ignacio Cancino
-- Luis Ramirez
-- Facundo Carotta
+## Tecnologías utilizadas
+
+- Python
+- Django
+- PostgreSQL
+- Supabase
+- HTML
+- CSS
+- Git
+- GitHub
+
+## Base de datos
+
+El proyecto utiliza PostgreSQL mediante Supabase.
+
+La conexión se realiza utilizando una variable de entorno:
+
+```text
+DATABASE_URL
