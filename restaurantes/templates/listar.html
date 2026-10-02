@@ -1,168 +1,534 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restaurantes Visitados</title>
-  <style>
-    body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 40px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Restaurantes</title>
 
-.tabla-contenedor {
-    width: 100%;
-    overflow-x: auto;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-@media (max-width: 600px) {
-    body {
-        padding: 16px;
-    }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
 
-    h1 {
-        font-size: 24px;
-    }
+        .contenedor {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
 
-    th, td {
-        white-space: nowrap;
-    }
-}
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #999; padding: 8px 12px; text-align: left; }
-    th { background-color: #333; color: white; }
-    .verde { background-color: #d4f7dc; }
-    .amarillo { background-color: #fff6cc; }
-    .rojo { background-color: #f9d6d6; }
-    form { margin-bottom: 16px; }
-    select { padding: 6px 10px; }
+        .encabezado {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-    button,
-a {
-    display: inline-block;
-    padding: 10px 14px;
-    margin: 4px 0;
-}
+        .titulo h1 {
+            margin: 0 0 6px 0;
+            color: #222;
+            font-size: 32px;
+        }
 
-button,
-select {
-    font-size: 16px;
-    min-height: 44px;
-}
+        .titulo p {
+            margin: 0;
+            color: #666;
+        }
 
-select {
-    max-width: 100%;
-}
+        .acciones-superiores {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
-@media (max-width: 600px) {
-    td a {
-        display: block;
-        text-align: center;
-    }
-}
+        .btn {
+            display: inline-block;
+            padding: 11px 16px;
+            border-radius: 8px;
+            border: none;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: center;
+        }
 
-.mensaje {
-    padding: 10px;
-    margin-bottom: 15px;
-    background-color: #d4f7dc;
-    border: 1px solid #8ac99a;
-}
-  </style>
+        .btn-principal {
+            background-color: #2f3e46;
+            color: white;
+        }
+
+        .btn-principal:hover {
+            background-color: #1f2a30;
+        }
+
+        .btn-secundario {
+            background-color: #e4e7ea;
+            color: #333;
+        }
+
+        .btn-secundario:hover {
+            background-color: #d5d9dd;
+        }
+
+        .mensaje {
+            background-color: #e8f4ec;
+            border: 1px solid #b8d8c1;
+            color: #2d6639;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .filtros {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+            margin-bottom: 20px;
+        }
+
+        .filtros form {
+            display: flex;
+            align-items: end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .grupo-filtro {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .grupo-filtro label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        select {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: white;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4b6584;
+            box-shadow: 0 0 0 2px rgba(75, 101, 132, 0.15);
+        }
+
+        .tabla-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        .tabla-contenedor {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #2f3e46;
+            color: white;
+            text-align: left;
+            padding: 14px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e7e7e7;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background-color: #f7f8f9;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .abierto {
+            background-color: #e2f2e6;
+            color: #286338;
+        }
+
+        .cerrado {
+            background-color: #f7e4e6;
+            color: #8c2e38;
+        }
+
+        .calificacion {
+            white-space: nowrap;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-editar {
+            background-color: #4b6584;
+            color: white;
+        }
+
+        .btn-editar:hover {
+            background-color: #3d526a;
+        }
+
+        .btn-eliminar {
+            background-color: #b23a48;
+            color: white;
+        }
+
+        .btn-eliminar:hover {
+            background-color: #8f2f3a;
+        }
+
+        .sin-datos {
+            background-color: white;
+            padding: 40px 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: #666;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+        }
+
+        .paginacion {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .paginacion a {
+            color: #2f5d8a;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .paginacion a:hover {
+            text-decoration: underline;
+        }
+
+        .pagina-actual {
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .contenedor {
+                padding: 20px 15px;
+            }
+
+            .encabezado {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .titulo h1 {
+                font-size: 26px;
+            }
+
+            .acciones-superiores {
+                flex-direction: column;
+            }
+
+            .acciones-superiores .btn,
+            .acciones-superiores form,
+            .acciones-superiores button {
+                width: 100%;
+            }
+
+            .filtros form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .grupo-filtro {
+                width: 100%;
+            }
+
+            th,
+            td {
+                white-space: nowrap;
+            }
+
+            .acciones {
+                flex-direction: column;
+            }
+
+            .acciones .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
-  <body>
+<body>
 
-  <h1>Restaurantes Visitados</h1>
+    <div class="contenedor">
 
-  {% if messages %}
-    {% for message in messages %}
-        <p class="mensaje">{{ message }}</p>
-    {% endfor %}
-{% endif %}
+        <div class="encabezado">
 
-  <a href="{% url 'crear_restaurante' %}">
-  Agregar Restaurante
-  </a>
-  <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">Cerrar sesión</button>
-  </form>
+            <div class="titulo">
+                <h1>Guía de Restaurantes</h1>
+                <p>Administra tus restaurantes registrados.</p>
+            </div>
 
-  <form method="GET">
-    <label for="tipo"><strong>Tipo de comida:</strong></label>
-    <select name="tipo" id="tipo" onchange="this.form.submit()">
-      <option value="">Todos</option>
-      {% for t in tipos_disponibles %}
-        <option value="{{ t }}" {% if t == tipo_seleccionado %}selected{% endif %}>{{ t }}</option>
-      {% endfor %}
-    </select>
-  </form>
+            <div class="acciones-superiores">
 
-  {% if restaurantes %}
-  <div class="tabla-contenedor">
-  <table>
-    <tr>
-      <th>Nombre</th>
-      <th>Tipo de comida</th>
-      <th>Calificación</th>
-      <th>Estado</th>
-      <th>Fecha de visita</th>
-      <th>Acciones</th>
-    </tr>
-    {% for restaurante in restaurantes %}
-    <tr class="{% if restaurante.calificacion >= 4 %}verde{% elif restaurante.calificacion == 3 %}amarillo{% else %}rojo{% endif %}">
-        <td>{{ restaurante.nombre }}</td>
-        <td>{{ restaurante.tipo_comida }}</td>
-        <td>
-            {% for i in "12345" %}
-                {% if forloop.counter <= restaurante.calificacion %}★{% else %}☆{% endif %}
+                <a href="{% url 'crear_restaurante' %}" class="btn btn-principal">
+                    + Agregar restaurante
+                </a>
+
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secundario">
+                        Cerrar sesión
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mensaje">
+                    {{ message }}
+                </div>
             {% endfor %}
-        </td>
-        <td>
-            {% if restaurante.abierto %}Abierto{% else %}Cerrado{% endif %}
-        </td>
-        <td>
-            {% if restaurante.fecha_visita %}
-                {{ restaurante.fecha_visita|date:"d/m/Y" }}
-                (hace {{ restaurante.fecha_visita|timesince }})
-            {% endif %}
-        </td>
-        <td>
-            <a href="{% url 'editar_restaurante' restaurante.pk %}">
-                Editar
-            </a>
-            <a href="{% url 'eliminar_restaurante' restaurante.pk %}">
-               Eliminar
-                
-</a>
-        </td>
-    </tr>
-{% endfor %}
-</table>
-</div>
+        {% endif %}
 
-<div class="paginacion">
-    {% if restaurantes.has_previous %}
-        <a href="?page={{ restaurantes.previous_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">
-            Anterior
-        </a>
-    {% endif %}
 
-    <span>
-        Página {{ restaurantes.number }} de {{ restaurantes.paginator.num_pages }}
-    </span>
+        <div class="filtros">
 
-    {% if restaurantes.has_next %}
-        <a href="?page={{ restaurantes.next_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">
-            Siguiente
-        </a>
-    {% endif %}
-</div>
+            <form method="get">
 
-{% else %}
-    <p>No hay restaurantes registrados para este tipo de comida.</p>
-{% endif %}
-    
+                <div class="grupo-filtro">
+                    <label for="tipo">Filtrar por tipo de comida</label>
+
+                    <select name="tipo" id="tipo">
+
+                        <option value="">
+                            Todos los tipos
+                        </option>
+
+                        {% for tipo in tipos_disponibles %}
+                            <option
+                                value="{{ tipo }}"
+                                {% if tipo == tipo_seleccionado %}selected{% endif %}
+                            >
+                                {{ tipo }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-principal">
+                    Filtrar
+                </button>
+
+                {% if tipo_seleccionado %}
+                    <a href="{% url 'listar_restaurantes' %}" class="btn btn-secundario">
+                        Limpiar filtro
+                    </a>
+                {% endif %}
+
+            </form>
+
+        </div>
+
+
+        {% if restaurantes %}
+
+            <div class="tabla-card">
+
+                <div class="tabla-contenedor">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Tipo de comida</th>
+                                <th>Calificación</th>
+                                <th>Estado</th>
+                                <th>Fecha de visita</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for restaurante in restaurantes %}
+
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            {{ restaurante.nombre }}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        {{ restaurante.tipo_comida }}
+                                    </td>
+
+                                    <td class="calificacion">
+
+                                        {% for i in "12345" %}
+
+                                            {% if forloop.counter <= restaurante.calificacion %}
+                                                ★
+                                            {% else %}
+                                                ☆
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                    </td>
+
+                                    <td>
+
+                                        {% if restaurante.abierto %}
+
+                                            <span class="estado abierto">
+                                                Abierto
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="estado cerrado">
+                                                Cerrado
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ restaurante.fecha_visita|date:"d/m/Y" }}
+
+                                        <br>
+
+                                        <small>
+                                            Hace {{ restaurante.fecha_visita|timesince }}
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="acciones">
+
+                                            <a
+                                                href="{% url 'editar_restaurante' restaurante.pk %}"
+                                                class="btn btn-editar"
+                                            >
+                                                Editar
+                                            </a>
+
+                                            <a
+                                                href="{% url 'eliminar_restaurante' restaurante.pk %}"
+                                                class="btn btn-eliminar"
+                                            >
+                                                Eliminar
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div class="paginacion">
+
+                    {% if restaurantes.has_previous %}
+
+                        <a href="?page={{ restaurantes.previous_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">
+                            ← Anterior
+                        </a>
+
+                    {% endif %}
+
+
+                    <span class="pagina-actual">
+                        Página {{ restaurantes.number }}
+                        de {{ restaurantes.paginator.num_pages }}
+                    </span>
+
+
+                    {% if restaurantes.has_next %}
+
+                        <a href="?page={{ restaurantes.next_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">
+                            Siguiente →
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="sin-datos">
+
+                <h3>No hay restaurantes disponibles</h3>
+
+                <p>
+                    Todavía no tienes restaurantes registrados
+                    o no existen resultados para el filtro seleccionado.
+                </p>
+
+                <a href="{% url 'crear_restaurante' %}" class="btn btn-principal">
+                    Agregar restaurante
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
 </body>
 </html>
