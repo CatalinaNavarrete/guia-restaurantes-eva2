@@ -10,7 +10,11 @@ class RestauranteForm(forms.ModelForm):
         model = Restaurante
         fields = [
             'nombre',
+            'descripcion',
             'tipo_comida',
+            'ciudad',
+            'direccion',
+            'telefono',
             'calificacion',
             'abierto',
             'fecha_visita',

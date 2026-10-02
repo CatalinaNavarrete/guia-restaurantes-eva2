@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Guía de Restaurantes</title>
 
     <style>
@@ -189,6 +191,7 @@
         .acciones {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .btn-editar {
@@ -294,6 +297,7 @@
 
     <div class="contenedor">
 
+        <!-- ENCABEZADO -->
         <div class="encabezado">
 
             <div class="titulo">
@@ -306,13 +310,20 @@
     Mis reservas
 </a>
 
-                <a href="{% url 'crear_restaurante' %}" class="btn btn-principal">
+                <a
+                    href="{% url 'crear_restaurante' %}"
+                    class="btn btn-principal"
+                >
                     + Agregar restaurante
                 </a>
 
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-secundario">
+
+                    <button
+                        type="submit"
+                        class="btn btn-secundario"
+                    >
                         Cerrar sesión
                     </button>
                 </form>
@@ -322,48 +333,73 @@
         </div>
 
 
+        <!-- MENSAJES -->
         {% if messages %}
+
             {% for message in messages %}
+
                 <div class="mensaje">
                     {{ message }}
                 </div>
+
             {% endfor %}
+
         {% endif %}
 
 
+        <!-- FILTRO -->
         <div class="filtros">
 
             <form method="get">
 
                 <div class="grupo-filtro">
-                    <label for="tipo">Filtrar por tipo de comida</label>
 
-                    <select name="tipo" id="tipo">
+                    <label for="tipo">
+                        Filtrar por tipo de comida
+                    </label>
+
+                    <select
+                        name="tipo"
+                        id="tipo"
+                    >
 
                         <option value="">
                             Todos los tipos
                         </option>
 
                         {% for tipo in tipos_disponibles %}
+
                             <option
                                 value="{{ tipo }}"
                                 {% if tipo == tipo_seleccionado %}selected{% endif %}
                             >
                                 {{ tipo }}
                             </option>
+
                         {% endfor %}
 
                     </select>
+
                 </div>
 
-                <button type="submit" class="btn btn-principal">
+
+                <button
+                    type="submit"
+                    class="btn btn-principal"
+                >
                     Filtrar
                 </button>
 
+
                 {% if tipo_seleccionado %}
-                    <a href="{% url 'listar_restaurantes' %}" class="btn btn-secundario">
+
+                    <a
+                        href="{% url 'listar_restaurantes' %}"
+                        class="btn btn-secundario"
+                    >
                         Limpiar filtro
                     </a>
+
                 {% endif %}
 
             </form>
@@ -371,6 +407,7 @@
         </div>
 
 
+        <!-- LISTADO -->
         {% if restaurantes %}
 
             <div class="tabla-card">
@@ -380,6 +417,7 @@
                     <table>
 
                         <thead>
+
                             <tr>
                                 <th>Nombre</th>
                                 <th>Tipo de comida</th>
@@ -388,7 +426,9 @@
                                 <th>Fecha de visita</th>
                                 <th>Acciones</th>
                             </tr>
+
                         </thead>
+
 
                         <tbody>
 
@@ -396,16 +436,21 @@
 
                                 <tr>
 
+                                    <!-- NOMBRE -->
                                     <td>
                                         <strong>
                                             {{ restaurante.nombre }}
                                         </strong>
                                     </td>
 
+
+                                    <!-- TIPO -->
                                     <td>
                                         {{ restaurante.tipo_comida }}
                                     </td>
 
+
+                                    <!-- CALIFICACIÓN -->
                                     <td class="calificacion">
 
                                         {% for i in "12345" %}
@@ -420,6 +465,8 @@
 
                                     </td>
 
+
+                                    <!-- ESTADO -->
                                     <td>
 
                                         {% if restaurante.abierto %}
@@ -438,18 +485,30 @@
 
                                     </td>
 
+
+                                    <!-- FECHA -->
                                     <td>
 
-                                        {{ restaurante.fecha_visita|date:"d/m/Y" }}
+                                        {% if restaurante.fecha_visita %}
 
-                                        <br>
+                                            {{ restaurante.fecha_visita|date:"d/m/Y" }}
 
-                                        <small>
-                                            Hace {{ restaurante.fecha_visita|timesince }}
-                                        </small>
+                                            <br>
+
+                                            <small>
+                                                Hace {{ restaurante.fecha_visita|timesince }}
+                                            </small>
+
+                                        {% else %}
+
+                                            Sin fecha
+
+                                        {% endif %}
 
                                     </td>
 
+
+                                    <!-- ACCIONES -->
                                     <td>
 
                                         <div class="acciones">
@@ -458,6 +517,13 @@
         class="btn btn-principal"
     >
         Reservar
+    </a>
+
+    <a
+        href="{% url 'detalle_restaurante' restaurante.pk %}"
+        class="btn btn-secundario"
+    >
+        Ver detalle
     </a>
 
     {% if restaurante.usuario == request.user %}
@@ -490,11 +556,14 @@
                 </div>
 
 
+                <!-- PAGINACIÓN -->
                 <div class="paginacion">
 
                     {% if restaurantes.has_previous %}
 
-                        <a href="?page={{ restaurantes.previous_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">
+                        <a
+                            href="?page={{ restaurantes.previous_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}"
+                        >
                             ← Anterior
                         </a>
 
@@ -502,14 +571,18 @@
 
 
                     <span class="pagina-actual">
+
                         Página {{ restaurantes.number }}
                         de {{ restaurantes.paginator.num_pages }}
+
                     </span>
 
 
                     {% if restaurantes.has_next %}
 
-                        <a href="?page={{ restaurantes.next_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">
+                        <a
+                            href="?page={{ restaurantes.next_page_number }}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}"
+                        >
                             Siguiente →
                         </a>
 
@@ -519,8 +592,10 @@
 
             </div>
 
+
         {% else %}
 
+            <!-- SIN RESTAURANTES -->
             <div class="sin-datos">
 
                 <h3>No hay restaurantes disponibles</h3>
@@ -530,7 +605,10 @@
                     o no existen resultados para el filtro seleccionado.
                 </p>
 
-                <a href="{% url 'crear_restaurante' %}" class="btn btn-principal">
+                <a
+                    href="{% url 'crear_restaurante' %}"
+                    class="btn btn-principal"
+                >
                     Agregar restaurante
                 </a>
 
@@ -541,4 +619,5 @@
     </div>
 
 </body>
+
 </html>

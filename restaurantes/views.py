@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db import DatabaseError
 from django.db.models import Sum
 
 from .models import Restaurante, Reserva
 from .forms import RestauranteForm, RegistroForm, ReservaForm
-from django.db import DatabaseError
+
 
 def registro(request):
     if request.user.is_authenticated:
@@ -17,29 +18,24 @@ def registro(request):
 
         if form.is_valid():
             form.save()
-
             messages.success(
                 request,
                 'Cuenta creada correctamente. Ahora puedes iniciar sesión.'
             )
-
             return redirect('login')
-
     else:
         form = RegistroForm()
 
     return render(
         request,
         'registration/registro.html',
-        {
-            'form': form
-        }
+        {'form': form}
     )
+
 
 @login_required
 def listar_restaurantes(request):
     restaurantes = Restaurante.objects.all()
-    
 
     tipos_disponibles = restaurantes.values_list(
         'tipo_comida',
@@ -74,17 +70,25 @@ def crear_restaurante(request):
         if form.is_valid():
             restaurante = form.save(commit=False)
             restaurante.usuario = request.user
-            restaurante.save()
 
-            messages.success(request, 'Restaurante creado correctamente.')
-            return redirect('listar_restaurantes')
-
+            try:
+                restaurante.save()
+            except DatabaseError:
+                messages.error(
+                    request,
+                    'Ocurrió un error al guardar el restaurante.'
+                )
+            else:
+                messages.success(
+                    request,
+                    'Restaurante creado correctamente.'
+                )
+                return redirect('listar_restaurantes')
         else:
             messages.error(
                 request,
                 'No se pudo crear el restaurante. Revisa los datos ingresados.'
             )
-
     else:
         form = RestauranteForm()
 
@@ -113,16 +117,24 @@ def editar_restaurante(request, pk):
         )
 
         if form.is_valid():
-            form.save()
-            messages.success(
-                request,
-                'Restaurante actualizado correctamente.'
-            )
-            return redirect('listar_restaurantes')
+            try:
+                form.save()
+            except DatabaseError:
+                messages.error(
+                    request,
+                    'Ocurrió un error al actualizar el restaurante.'
+                )
+            else:
+                messages.success(
+                    request,
+                    'Restaurante actualizado correctamente.'
+                )
+                return redirect('listar_restaurantes')
         else:
             messages.error(
                 request,
-                'No se pudo actualizar el restaurante. Revisa los datos ingresados.'
+                'No se pudo actualizar el restaurante. '
+                'Revisa los datos ingresados.'
             )
     else:
         form = RestauranteForm(instance=restaurante)
@@ -133,7 +145,7 @@ def editar_restaurante(request, pk):
         {
             'form': form,
             'restaurante': restaurante,
-        },
+        }
     )
 
 
@@ -149,18 +161,27 @@ def eliminar_restaurante(request, pk):
         return redirect('listar_restaurantes')
 
     if request.method == 'POST':
-        restaurante.delete()
-        messages.success(
-            request,
-            'Restaurante eliminado correctamente.'
-        )
+        try:
+            restaurante.delete()
+        except DatabaseError:
+            messages.error(
+                request,
+                'Ocurrió un error al eliminar el restaurante.'
+            )
+        else:
+            messages.success(
+                request,
+                'Restaurante eliminado correctamente.'
+            )
+
         return redirect('listar_restaurantes')
 
     return render(
         request,
         'eliminar.html',
-        {'restaurante': restaurante},
+        {'restaurante': restaurante}
     )
+
 
 @login_required
 def reservar_restaurante(request, pk):
@@ -189,7 +210,6 @@ def reservar_restaurante(request, pk):
                     'Ya tienes una reserva para este restaurante '
                     'en la misma fecha y hora.'
                 )
-
             else:
                 reservados = Reserva.objects.filter(
                     restaurante=restaurante,
@@ -208,7 +228,6 @@ def reservar_restaurante(request, pk):
                         'cantidad_personas',
                         f'Solo quedan {disponibles} cupos disponibles.'
                     )
-
                 else:
                     reserva = form.save(commit=False)
                     reserva.usuario = request.user
@@ -228,7 +247,6 @@ def reservar_restaurante(request, pk):
                             'Reserva realizada correctamente.'
                         )
                         return redirect('mis_reservas')
-
     else:
         form = ReservaForm()
 
@@ -244,13 +262,32 @@ def reservar_restaurante(request, pk):
 
 @login_required
 def mis_reservas(request):
-    # Cada cliente ve solamente sus propias reservas
-    reservas = Reserva.objects.filter(
-        usuario=request.user
-    )
+    reservas = Reserva.objects.filter(usuario=request.user)
 
     return render(
         request,
         'mis_reservas.html',
         {'reservas': reservas}
+    )
+
+
+@login_required
+def detalle_restaurante(request, pk):
+    restaurante = get_object_or_404(Restaurante, pk=pk)
+
+    horarios = restaurante.horarios.all()
+    promociones = restaurante.promociones.all()
+    resenas = restaurante.resenas.all()
+    fotos = restaurante.fotos.all()
+
+    return render(
+        request,
+        'detalle.html',
+        {
+            'restaurante': restaurante,
+            'horarios': horarios,
+            'promociones': promociones,
+            'resenas': resenas,
+            'fotos': fotos,
+        }
     )
