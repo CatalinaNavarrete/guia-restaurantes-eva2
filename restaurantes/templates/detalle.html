@@ -1,414 +1,387 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}
+{{ restaurante.nombre }}
+{% endblock %}
 
-    <title>{{ restaurante.nombre }}</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+{% block extra_css %}
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            color: #333;
-        }
+<style>
+    .cabecera {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
 
-        .contenedor {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+    h1 {
+        margin: 0;
+        color: #222;
+    }
 
+    .subtitulo {
+        color: #666;
+        margin-top: 6px;
+    }
+
+    .tarjeta {
+        background-color: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+    }
+
+    .tarjeta h2 {
+        margin-top: 0;
+        color: #2f3e46;
+        border-bottom: 1px solid #e5e5e5;
+        padding-bottom: 10px;
+    }
+
+    .dato {
+        margin-bottom: 12px;
+    }
+
+    .dato strong {
+        color: #222;
+    }
+
+    .estado {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .abierto {
+        background-color: #e2f2e6;
+        color: #286338;
+    }
+
+    .cerrado {
+        background-color: #f7e4e6;
+        color: #8c2e38;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 11px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-principal {
+        background-color: #2f3e46;
+        color: white;
+    }
+
+    .btn-secundario {
+        background-color: #e4e7ea;
+        color: #333;
+    }
+
+    .acciones {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .elemento {
+        padding: 15px 0;
+        border-bottom: 1px solid #eeeeee;
+    }
+
+    .elemento:last-child {
+        border-bottom: none;
+    }
+
+    .foto {
+        max-width: 300px;
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+
+    .sin-datos {
+        color: #777;
+    }
+
+    @media (max-width: 700px) {
         .cabecera {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        h1 {
-            margin: 0;
-            color: #222;
-        }
-
-        .subtitulo {
-            color: #666;
-            margin-top: 6px;
-        }
-
-        .tarjeta {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
-        }
-
-        .tarjeta h2 {
-            margin-top: 0;
-            color: #2f3e46;
-            border-bottom: 1px solid #e5e5e5;
-            padding-bottom: 10px;
-        }
-
-        .dato {
-            margin-bottom: 12px;
-        }
-
-        .dato strong {
-            color: #222;
-        }
-
-        .estado {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .abierto {
-            background-color: #e2f2e6;
-            color: #286338;
-        }
-
-        .cerrado {
-            background-color: #f7e4e6;
-            color: #8c2e38;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 11px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-principal {
-            background-color: #2f3e46;
-            color: white;
-        }
-
-        .btn-secundario {
-            background-color: #e4e7ea;
-            color: #333;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .acciones {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .elemento {
-            padding: 15px 0;
-            border-bottom: 1px solid #eeeeee;
-        }
-
-        .elemento:last-child {
-            border-bottom: none;
-        }
-
-        .foto {
-            max-width: 300px;
             width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
+            flex-direction: column;
         }
 
-        .sin-datos {
-            color: #777;
+        .acciones .btn {
+            width: 100%;
+            text-align: center;
         }
+    }
+</style>
 
-        @media (max-width: 700px) {
-            .cabecera {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+{% endblock %}
 
-            .acciones {
-                width: 100%;
-                flex-direction: column;
-            }
 
-            .acciones .btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
-    </style>
-</head>
+{% block content %}
 
-<body>
+<div class="cabecera">
 
-    <div class="contenedor">
+    <div>
+        <h1>{{ restaurante.nombre }}</h1>
 
-        <div class="cabecera">
+        <p class="subtitulo">
+            Información detallada del restaurante
+        </p>
+    </div>
 
-            <div>
-                <h1>{{ restaurante.nombre }}</h1>
+    <div class="acciones">
 
-                <p class="subtitulo">
-                    Información detallada del restaurante
-                </p>
-            </div>
+        <a
+            href="{% url 'listar_restaurantes' %}"
+            class="btn btn-secundario"
+        >
+            ← Volver
+        </a>
 
-            <div class="acciones">
-
-                <a
-                    href="{% url 'listar_restaurantes' %}"
-                    class="btn btn-secundario"
-                >
-                    ← Volver
-                </a>
-
-                <a
-                    href="{% url 'reservar_restaurante' restaurante.pk %}"
-                    class="btn btn-principal"
-                >
-                    Reservar
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- INFORMACIÓN GENERAL -->
-        <div class="tarjeta">
-
-            <h2>Información general</h2>
-
-            <div class="dato">
-                <strong>Descripción:</strong>
-                {{ restaurante.descripcion|default:"Sin descripción" }}
-            </div>
-
-            <div class="dato">
-                <strong>Tipo de comida:</strong>
-                {{ restaurante.tipo_comida }}
-            </div>
-
-            <div class="dato">
-                <strong>Ciudad:</strong>
-                {{ restaurante.ciudad|default:"No informada" }}
-            </div>
-
-            <div class="dato">
-                <strong>Dirección:</strong>
-                {{ restaurante.direccion|default:"No informada" }}
-            </div>
-
-            <div class="dato">
-                <strong>Teléfono:</strong>
-                {{ restaurante.telefono|default:"No informado" }}
-            </div>
-
-            <div class="dato">
-                <strong>Capacidad:</strong>
-                {{ restaurante.capacidad }} personas
-            </div>
-
-            <div class="dato">
-                <strong>Calificación:</strong>
-                {{ restaurante.calificacion }} / 5
-            </div>
-
-            <div class="dato">
-
-                <strong>Estado:</strong>
-
-                {% if restaurante.abierto %}
-
-                    <span class="estado abierto">
-                        Abierto
-                    </span>
-
-                {% else %}
-
-                    <span class="estado cerrado">
-                        Cerrado
-                    </span>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-
-        <!-- HORARIOS -->
-        <div class="tarjeta">
-
-            <h2>Horarios</h2>
-
-            {% for horario in horarios %}
-
-                <div class="elemento">
-
-                    <strong>
-                        {{ horario.get_dia_semana_display }}
-                    </strong>
-
-                    {% if horario.cerrado %}
-
-                        — Cerrado
-
-                    {% else %}
-
-                        —
-                        {{ horario.hora_apertura|time:"H:i" }}
-                        a
-                        {{ horario.hora_cierre|time:"H:i" }}
-
-                    {% endif %}
-
-                </div>
-
-            {% empty %}
-
-                <p class="sin-datos">
-                    No hay horarios registrados.
-                </p>
-
-            {% endfor %}
-
-        </div>
-
-
-        <!-- PROMOCIONES -->
-        <div class="tarjeta">
-
-            <h2>Promociones</h2>
-
-            {% for promocion in promociones %}
-
-                <div class="elemento">
-
-                    <strong>
-                        {{ promocion.titulo }}
-                    </strong>
-
-                    <p>
-                        {{ promocion.descripcion }}
-                    </p>
-
-                    <p>
-                        Descuento:
-                        <strong>{{ promocion.descuento }}%</strong>
-                    </p>
-
-                    <small>
-                        Desde {{ promocion.fecha_inicio|date:"d/m/Y" }}
-                        hasta {{ promocion.fecha_fin|date:"d/m/Y" }}
-                    </small>
-
-                </div>
-
-            {% empty %}
-
-                <p class="sin-datos">
-                    No hay promociones disponibles.
-                </p>
-
-            {% endfor %}
-
-        </div>
-
-
-        <!-- RESEÑAS -->
-        <div class="tarjeta">
-
-            <h2>Reseñas</h2>
-
-            {% for resena in resenas %}
-
-                <div class="elemento">
-
-                    <strong>
-                        {{ resena.usuario.username }}
-                    </strong>
-
-                    <p>
-                        Puntuación:
-                        {{ resena.puntuacion }} / 5
-                    </p>
-
-                    <p>
-                        {{ resena.texto }}
-                    </p>
-
-                    <small>
-                        Visita:
-                        {{ resena.fecha_visita|date:"d/m/Y" }}
-                        ·
-                        Útil: {{ resena.util_count }}
-                    </small>
-
-                </div>
-
-            {% empty %}
-
-                <p class="sin-datos">
-                    Este restaurante todavía no tiene reseñas.
-                </p>
-
-            {% endfor %}
-
-        </div>
-
-
-        <!-- FOTOS -->
-        <div class="tarjeta">
-
-            <h2>Fotos</h2>
-
-            {% for foto in fotos %}
-
-                <div class="elemento">
-
-                    {% if foto.imagen %}
-
-                        <img
-                            src="{{ foto.imagen.url }}"
-                            alt="{{ foto.descripcion }}"
-                            class="foto"
-                        >
-
-                    {% endif %}
-
-                    {% if foto.descripcion %}
-
-                        <p>
-                            {{ foto.descripcion }}
-                        </p>
-
-                    {% endif %}
-
-                </div>
-
-            {% empty %}
-
-                <p class="sin-datos">
-                    No hay fotografías registradas.
-                </p>
-
-            {% endfor %}
-
-        </div>
+        <a
+            href="{% url 'reservar_restaurante' restaurante.pk %}"
+            class="btn btn-principal"
+        >
+            Reservar
+        </a>
 
     </div>
 
-</body>
+</div>
 
-</html>
+
+<div class="tarjeta">
+
+    <h2>Información general</h2>
+
+    <div class="dato">
+        <strong>Descripción:</strong>
+        {{ restaurante.descripcion|default:"Sin descripción" }}
+    </div>
+
+    <div class="dato">
+        <strong>Tipo de comida:</strong>
+        {{ restaurante.tipo_comida }}
+    </div>
+
+    <div class="dato">
+        <strong>Ciudad:</strong>
+        {{ restaurante.ciudad|default:"No informada" }}
+    </div>
+
+    <div class="dato">
+        <strong>Dirección:</strong>
+        {{ restaurante.direccion|default:"No informada" }}
+    </div>
+
+    <div class="dato">
+        <strong>Teléfono:</strong>
+        {{ restaurante.telefono|default:"No informado" }}
+    </div>
+
+    <div class="dato">
+        <strong>Capacidad:</strong>
+        {{ restaurante.capacidad }} personas
+    </div>
+
+    <div class="dato">
+        <strong>Calificación:</strong>
+        {{ restaurante.calificacion }} / 5
+    </div>
+
+    <div class="dato">
+
+        <strong>Estado:</strong>
+
+        {% if restaurante.abierto %}
+
+            <span class="estado abierto">
+                Abierto
+            </span>
+
+        {% else %}
+
+            <span class="estado cerrado">
+                Cerrado
+            </span>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="tarjeta">
+
+    <h2>Horarios</h2>
+
+    {% for horario in horarios %}
+
+        <div class="elemento">
+
+            <strong>
+                {{ horario.get_dia_semana_display }}
+            </strong>
+
+            {% if horario.cerrado %}
+
+                — Cerrado
+
+            {% else %}
+
+                —
+                {{ horario.hora_apertura|time:"H:i" }}
+                a
+                {{ horario.hora_cierre|time:"H:i" }}
+
+            {% endif %}
+
+        </div>
+
+    {% empty %}
+
+        <p class="sin-datos">
+            No hay horarios registrados.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+
+<div class="tarjeta">
+
+    <h2>Promociones</h2>
+
+    {% for promocion in promociones %}
+
+        <div class="elemento">
+
+            <strong>
+                {{ promocion.titulo }}
+            </strong>
+
+            <p>
+                {{ promocion.descripcion }}
+            </p>
+
+            <p>
+                Descuento:
+                <strong>{{ promocion.descuento }}%</strong>
+            </p>
+
+            <small>
+                Desde {{ promocion.fecha_inicio|date:"d/m/Y" }}
+                hasta {{ promocion.fecha_fin|date:"d/m/Y" }}
+            </small>
+
+        </div>
+
+    {% empty %}
+
+        <p class="sin-datos">
+            No hay promociones disponibles.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+
+<div class="tarjeta">
+
+    <h2>Reseñas</h2>
+
+    {% for resena in resenas %}
+
+        <div class="elemento">
+
+            <strong>
+                {{ resena.usuario.username }}
+            </strong>
+
+            <p>
+                Puntuación:
+                {{ resena.puntuacion }} / 5
+            </p>
+
+            <p>
+                {{ resena.texto }}
+            </p>
+
+            <small>
+                Visita:
+                {{ resena.fecha_visita|date:"d/m/Y" }}
+                ·
+                Útil: {{ resena.util_count }}
+            </small>
+
+        </div>
+
+    {% empty %}
+
+        <p class="sin-datos">
+            Este restaurante todavía no tiene reseñas.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+
+<div class="tarjeta">
+
+    <h2>Fotos</h2>
+
+    {% for foto in fotos %}
+
+        <div class="elemento">
+
+            {% if foto.imagen %}
+
+                <img
+                    src="{{ foto.imagen.url }}"
+                    alt="{{ foto.descripcion }}"
+                    class="foto"
+                >
+
+            {% endif %}
+
+            {% if foto.descripcion %}
+
+                <p>
+                    {{ foto.descripcion }}
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    {% empty %}
+
+        <p class="sin-datos">
+            No hay fotografías registradas.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

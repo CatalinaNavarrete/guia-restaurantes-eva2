@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        Guía de Restaurantes
+        {% endblock %}
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        nav {
+            background-color: #2f3e46;
+            color: white;
+            padding: 14px 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .usuario-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logout-form {
+            margin: 0;
+        }
+
+        .btn-logout {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            border-radius: 7px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background-color: white;
+            color: #2f3e46;
+        }
+
+        .contenedor-base {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            min-height: calc(100vh - 150px);
+        }
+
+        .mensaje {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #e8f4ec;
+            border: 1px solid #b8d8c1;
+            color: #2d6639;
+        }
+
+        footer {
+            background-color: #2f3e46;
+            color: white;
+            text-align: center;
+            padding: 18px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 700px) {
+
+            nav {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .usuario-nav {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            nav a {
+                text-align: center;
+                padding: 5px;
+            }
+
+            .btn-logout {
+                width: 100%;
+            }
+
+            .contenedor-base {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    {% if user.is_authenticated %}
+
+    <nav>
+
+        <div class="nav-links">
+
+            <a href="{% url 'listar_restaurantes' %}">
+                Restaurantes
+            </a>
+
+            <a href="{% url 'crear_restaurante' %}">
+                Nuevo restaurante
+            </a>
+
+            <a href="{% url 'mis_reservas' %}">
+                Mis reservas
+            </a>
+
+        </div>
+
+        <div class="usuario-nav">
+
+            <span>
+                {{ user.username }}
+            </span>
+
+            <form
+                method="post"
+                action="{% url 'logout' %}"
+                class="logout-form"
+            >
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn-logout"
+                >
+                    Salir
+                </button>
+
+            </form>
+
+        </div>
+
+    </nav>
+
+    {% endif %}
+
+
+    <main class="contenedor-base">
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="mensaje">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <footer>
+        Guía de Restaurantes · Evaluación 2
+    </footer>
+
+</body>
+
+</html>
