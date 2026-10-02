@@ -306,6 +306,9 @@
             </div>
 
             <div class="acciones-superiores">
+              <a href="{% url 'mis_reservas' %}" class="btn btn-secundario">
+    Mis reservas
+</a>
 
                 <a
                     href="{% url 'crear_restaurante' %}"
@@ -509,29 +512,36 @@
                                     <td>
 
                                         <div class="acciones">
+    <a
+        href="{% url 'reservar_restaurante' restaurante.pk %}"
+        class="btn btn-principal"
+    >
+        Reservar
+    </a>
 
-                                            <a
-                                                href="{% url 'detalle_restaurante' restaurante.pk %}"
-                                                class="btn btn-principal"
-                                            >
-                                                Ver detalle
-                                            </a>
+    <a
+        href="{% url 'detalle_restaurante' restaurante.pk %}"
+        class="btn btn-secundario"
+    >
+        Ver detalle
+    </a>
 
-                                            <a
-                                                href="{% url 'editar_restaurante' restaurante.pk %}"
-                                                class="btn btn-editar"
-                                            >
-                                                Editar
-                                            </a>
+    {% if restaurante.usuario == request.user %}
+        <a
+            href="{% url 'editar_restaurante' restaurante.pk %}"
+            class="btn btn-editar"
+        >
+            Editar
+        </a>
 
-                                            <a
-                                                href="{% url 'eliminar_restaurante' restaurante.pk %}"
-                                                class="btn btn-eliminar"
-                                            >
-                                                Eliminar
-                                            </a>
-
-                                        </div>
+        <a
+            href="{% url 'eliminar_restaurante' restaurante.pk %}"
+            class="btn btn-eliminar"
+        >
+            Eliminar
+        </a>
+    {% endif %}
+</div>
 
                                     </td>
 
