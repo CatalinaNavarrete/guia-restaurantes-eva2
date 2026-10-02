@@ -30,4 +30,10 @@ urlpatterns = [
         views.eliminar_restaurante,
         name='eliminar_restaurante'
     ),
+
+    path(
+    'registro/',
+    views.registro,
+    name='registro'
+    ),
 ]
